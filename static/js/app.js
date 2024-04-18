@@ -3,14 +3,17 @@ const url = "https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json"
 const dataPromise = d3.json(url)
 console.log("Data Promise: ", dataPromise);
 
-// Fetch the JSON data 
+// Fetch data from url
 d3.json(url).then(function(data) {
   console.log("data", data);
 });
 
 // Set up variables and get data from JSON for charts 
+//store charts data
 var samples_chart;
+//store demographic data
 var meta_data_demo;
+//store json data
 d3.json(url).then(function (data) {
     let selector = d3.select("#selDataset");
     meta_data_demo = data.metadata;
@@ -18,8 +21,11 @@ d3.json(url).then(function (data) {
     data.names.forEach((id) => {
         selector.append("option").text(id).property("value", id);
     });
+    //function call for demographic
     getmetaData(meta_data_demo[0]);
+    //function call for hbar chart
     gethbarChart(samples_chart[0]);
+    //function call for bubble chart
     getbubbleChart(samples_chart[0]);
 });
 
@@ -27,17 +33,17 @@ function optionChanged(value) {
     const selectotuId = samples_chart.find((item) => item.id === value);
     const demographicInfo = meta_data_demo.find((item) => item.id == value);
 
-    // Insterting Demographic Data
+    // Insterting Data for demographic
     getmetaData(demographicInfo);
 
-    // Bar Chart
+    // refresh Bar Chart
     gethbarChart(selectotuId);
 
-    // Bubble Chart
+    // refresh Bubble Chart
     getbubbleChart(selectotuId);
 
 }
-
+//define function for demographic data
 function getmetaData(demographicInfo) {
     let demoSelect = d3.select("#sample-metadata");
 
@@ -51,7 +57,7 @@ function getmetaData(demographicInfo) {
     wfreq: ${demographicInfo.wfreq}`
     );
 }
-
+//define hbar data function graph is shown using plotly
 function gethbarChart(selectotuId) {
     let x_axis = selectotuId.sample_values.slice(0, 10).reverse();
     let y_axis = selectotuId.otu_ids
@@ -81,7 +87,7 @@ function gethbarChart(selectotuId) {
 
     Plotly.newPlot("bar", chart, layout);
 }
-
+//define bubble data function graph is shown using plotly
 function getbubbleChart(selectotuId) {
     let x_axis = selectotuId.otu_ids;
     let y_axis = selectotuId.sample_values;
